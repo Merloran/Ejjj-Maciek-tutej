@@ -1,0 +1,20 @@
+#include <SFML/Window.hpp>
+
+int main()
+{
+    sf::Window oknoAplikacji (sf::VideoMode (800,600,32), "Kurs SFML 2.5 - http://cpp0x.pl", sf::Style::Fullscreen);
+    while (oknoAplikacji.isOpen())
+    {
+        sf::Event zdarzenie;
+        while (oknoAplikacji.pollEvent (zdarzenie))
+        {
+            if (zdarzenie.type == sf::Event::Closed)
+                oknoAplikacji.close();
+
+            if (zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Escape)
+                oknoAplikacji.close();
+        }
+        oknoAplikacji.display();
+    }
+    return 0;
+}
