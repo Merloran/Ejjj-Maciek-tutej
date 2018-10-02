@@ -1,0 +1,104 @@
+#include "SFML/Graphics.hpp"
+#include <iostream>
+
+int main()
+{
+	sf::RenderWindow window(sf::VideoMode(600, 600), "SFML WORK!");
+
+	sf::Texture obraz;
+
+	if (!obraz.loadFromFile("Obrazek.jpg"))
+	{
+		// handle error
+	}
+
+
+	sf::Texture obraz1;
+
+	if (!obraz1.loadFromFile("Obrazek1.jpg"))
+	{
+		// handle error
+	}
+
+	sf::Texture obraz2;
+
+	if (!obraz2.loadFromFile("Obrazek2.jpg"))
+	{
+		// handle error
+	}
+
+	sf::Sprite zdj;
+	zdj.setTexture(obraz1);
+	zdj.setPosition(100,550);
+
+	sf::Sprite zdj2;
+	zdj2.setTexture(obraz);
+	int x =300, y = 400;
+
+
+	sf::Sprite zdj3;
+	zdj3.setTexture(obraz2);
+	zdj3.setPosition(100,200);
+
+	sf::Sprite zdj4;
+	zdj4.setTexture(obraz2);
+	zdj4.setPosition(400,200);
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+
+		while (window.pollEvent(event))
+		{
+            switch (event.type)
+			{
+			case sf::Event::Closed:
+				window.close();
+
+				break;
+
+			}
+		}
+
+	zdj2.setPosition(sf::Vector2f(x, y));
+		if (zdj.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()))
+		{
+			//std::cout << "doszlo do kolizji" << std::endl;
+		}
+		else
+		{
+			//zdj2.move(sf::Vector2f(0, +0.1));
+			y+=1;
+		}
+		/*
+		if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+                zdj2.move(sf::Vector2f(-0.2, 0));
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)        //inny sposob poruszania sie problem z game over :/
+                zdj2.move(sf::Vector2f(+0.2, 0));
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+                zdj2.move(sf::Vector2f(0, -0.2));
+        */
+
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+                x-=1;
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+                x+=1;
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+                y-=1.1;
+
+            if(y >= 600)
+            {
+                window.close();
+                std::cout << "GAME OVER!";
+            }
+
+		window.clear();
+
+		window.draw(zdj);
+		window.draw(zdj2);
+		window.draw(zdj3);
+		window.draw(zdj4);
+
+		window.display();
+	}
+}
