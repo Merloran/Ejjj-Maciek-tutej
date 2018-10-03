@@ -13,7 +13,10 @@ int main()
     sf::Time sek = sf::seconds(0.1);
     int predkosc = -1 * sek.asSeconds(), predkoscs = -0.5;
     */
+    bool sync =true;
 	sf::RenderWindow window(sf::VideoMode(600, 600), "SFML WORK!");
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(sync);
     sf::View view(sf::FloatRect(0, 0, 600, 600));
 
 	sf::Texture obraz;
@@ -110,7 +113,6 @@ int main()
 		{
 			//zdj2.move(sf::Vector2f(0, +0.1));
 			y+=4;
-			Sleep(2);
             view.setCenter(x, y);
             zdj5.setPosition(x - 310, y - 310);
 		}
@@ -126,17 +128,14 @@ int main()
         if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
         {
                 x-=3;
-			Sleep(3);
         }
         if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
         {
                 x+=3;
-			Sleep(3);
         }
         if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
         {
             y-=13;
-            Sleep(26);
         }
 
             if(y >= 600)
