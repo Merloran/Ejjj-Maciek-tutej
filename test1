@@ -125,15 +125,15 @@ int main()
                 zdj2.move(sf::Vector2f(0, -0.2));
         */
 
-        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
                 x-=3;
         }
-        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
                 x+=3;
         }
-        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             y-=13;
         }
