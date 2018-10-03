@@ -14,6 +14,11 @@ int main()
         sf::Event zdarzenie;
         while (okienko.pollEvent(zdarzenie))
         {
+
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Escape)
+                {
+                okienko.close();
+                }
             switch(zdarzenie.type)
             {
             case sf::Event::KeyReleased:
@@ -33,13 +38,20 @@ int main()
                     {
                         okienko.close();
 
+                        bool sync =true;
                         sf::RenderWindow okienkog(sf::VideoMode(800, 600), "Gra");
+                        okienkog.setFramerateLimit(80);
+                        okienkog.setVerticalSyncEnabled(sync);
                         sf::CircleShape circle;
+                        float predkoscl = 10,predkoscp = 10, predkoscg = 10, predkoscd = 10;
                         circle.setRadius(20);
-                        circle.setOutlineColor(sf::Color::Red);
+                        circle.setOutlineColor(sf::Color::Magenta);
                         circle.setOutlineThickness(5);
                         float x = 380, y = 280;
-                        circle.setFillColor(sf::Color::Green);
+                        circle.setFillColor(sf::Color::Cyan);
+                        sf::RectangleShape kwadrat( sf::Vector2f( 100, 100 ) );
+                        kwadrat.setPosition( 200, 100 );
+                        kwadrat.setFillColor(sf::Color::Red);
 
                 while (okienkog.isOpen())
         {
@@ -52,18 +64,50 @@ int main()
                 {
                 goto menu;
                 }
-                if(zdarzenieg.type == sf::Event::KeyPressed && zdarzenieg.key.code == sf::Keyboard::Left)
-                    x-=10;
-                if(zdarzenieg.type == sf::Event::KeyPressed && zdarzenieg.key.code == sf::Keyboard::Right)
-                    x+=10;
-                if(zdarzenieg.type == sf::Event::KeyPressed && zdarzenieg.key.code == sf::Keyboard::Up)
-                    y-=10;
-                if(zdarzenieg.type == sf::Event::KeyPressed && zdarzenieg.key.code == sf::Keyboard::Down)
-                    y+=10;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x >= 15)
+                    x-=predkoscl;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x <= 745)
+                    x+=predkoscp;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && y >= 15)
+                    y-=predkoscg;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && y <= 545)
+                    y+=predkoscd;
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
+             {
+                std::cout << "rozbiles sie \n";
+                predkoscl*=0;
+             }
+             else {predkoscl = 10;}
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))          //KOD NA Kolizje w trakcie pracy
+             {
+                std::cout << "rozbiles sie \n";
+                predkoscp*=0;
+             }
+             else {predkoscp = 10;}
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
+             {
+                std::cout << "rozbiles sie \n";
+                predkoscg*=0;
+             }
+             else{predkoscg = 10;}
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
+             {
+                std::cout << "rozbiles sie \n";
+                predkoscd*=0;
+             }
+             else {predkoscd = 10;}
+
             }
+
             circle.setPosition(x, y);
             okienkog.clear();
             okienkog.draw(circle);
+            okienkog.draw(kwadrat);
+            menu.obiekt(okienkog);
             okienkog.display();
 
         }
@@ -90,7 +134,7 @@ int main()
 
         okienko.clear(sf::Color::Blue);
 
-        menu.draw(okienko);
+        menu.wstaw(okienko);
 
         okienko.display();
     }
