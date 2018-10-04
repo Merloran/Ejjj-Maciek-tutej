@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <iostream>
+#include <math.h>
 
 int main()
 {
@@ -75,13 +76,6 @@ int main()
                 window.close();
                 if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                     window.close();
-                if (zdj.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj6.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj7.getGlobalBounds().intersects(zdj2.getGlobalBounds())) // odpowiada za kolizje przy spadaniu
-            {
-        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-        {
-            pozycja.y-=250.0;
-        }
-            }
 		}
 
 
@@ -95,10 +89,19 @@ int main()
                 pozycja.x+=3.0;
         }
 
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
+
+        }
+
 
         zdj2.setPosition(pozycja.x, pozycja.y);
         if (zdj.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj6.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj7.getGlobalBounds().intersects(zdj2.getGlobalBounds())) // odpowiada za kolizje przy spadaniu
             {
+                if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+        {
+            pozycja.y -= 300;
+        }
                 view.setCenter(pozycja.x, pozycja.y);                       //Kamera
                 zdj5.setPosition(pozycja.x - 310, pozycja.y - 310);    //tło
             }
