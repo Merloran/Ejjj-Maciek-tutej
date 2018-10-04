@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Menu.h"
+#include <math.h>
 
 int main()
 {
@@ -43,11 +44,11 @@ int main()
                         okienkog.setFramerateLimit(80);
                         okienkog.setVerticalSyncEnabled(sync);
                         sf::CircleShape circle;
-                        float predkoscl = 10,predkoscp = 10, predkoscg = 10, predkoscd = 10;
+                        float predkosclp = 5.0, predkoscgd = 5.0;
                         circle.setRadius(20);
-                        circle.setOutlineColor(sf::Color::Magenta);
-                        circle.setOutlineThickness(5);
-                        float x = 380, y = 280;
+                        sf::Vector2f postac;
+                        postac.x = 380;
+                        postac.y = 280;
                         circle.setFillColor(sf::Color::Cyan);
                         sf::RectangleShape kwadrat( sf::Vector2f( 100, 100 ) );
                         kwadrat.setPosition( 200, 100 );
@@ -60,54 +61,55 @@ int main()
             {
                 if (zdarzenieg.type == sf::Event::Closed)
                 okienkog.close();
+
                 if(zdarzenieg.type == sf::Event::KeyPressed && zdarzenieg.key.code == sf::Keyboard::Escape)
                 {
-                goto menu;
+                    goto menu;
                 }
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && x >= 15)
-                    x-=predkoscl;
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && x <= 745)
-                    x+=predkoscp;
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && y >= 15)
-                    y-=predkoscg;
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && y <= 545)
-                    y+=predkoscd;
 
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
-             {
-                std::cout << "rozbiles sie \n";
-                predkoscl*=0;
-             }
-             else {predkoscl = 10;}
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && postac.x >= 15)
+                    postac.x-=predkosclp;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && postac.x <= 745)
+                    postac.x+=predkosclp;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && postac.y >= 15)
+                    postac.y-=predkoscgd;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && postac.y <= 545)
+                    postac.y+=predkoscgd;
 
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))          //KOD NA Kolizje w trakcie pracy
-             {
-                std::cout << "rozbiles sie \n";
-                predkoscp*=0;
-             }
-             else {predkoscp = 10;}
+                    sf::FloatRect rectToMove(postac, {circle.getGlobalBounds().width, circle.getGlobalBounds().width});
 
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
-             {
-                std::cout << "rozbiles sie \n";
-                predkoscg*=0;
-             }
-             else{predkoscg = 10;}
+                    if(rectToMove.intersects(kwadrat.getGlobalBounds()))
+                {
 
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && circle.getGlobalBounds().intersects(kwadrat.getGlobalBounds()))
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && postac.x < kwadrat.getPosition().x + kwadrat.getGlobalBounds().width)
              {
-                std::cout << "rozbiles sie \n";
-                predkoscd*=0;
+                postac.x=kwadrat.getPosition().x + kwadrat.getGlobalBounds().width;
              }
-             else {predkoscd = 10;}
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && postac.x > kwadrat.getPosition().x - kwadrat.getGlobalBounds().width)   //Kolizja prawie dziala!
+             {
+                postac.x=kwadrat.getPosition().x - circle.getGlobalBounds().width;
+             }
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && postac.y > kwadrat.getPosition().y - kwadrat.getGlobalBounds().height)
+             {
+                postac.y=kwadrat.getPosition().y - circle.getGlobalBounds().height;
+             }
+
+             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && postac.y < kwadrat.getPosition().y + kwadrat.getGlobalBounds().height)
+             {
+                postac.y=kwadrat.getPosition().y + kwadrat.getGlobalBounds().height;
+             }
+                }
+
 
             }
 
-            circle.setPosition(x, y);
+            circle.setPosition(postac);
             okienkog.clear();
             okienkog.draw(circle);
             okienkog.draw(kwadrat);
-            menu.obiekt(okienkog);
+            //menu.obiekt(okienkog);
             okienkog.display();
 
         }
