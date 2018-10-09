@@ -11,6 +11,9 @@ int main()
     sf::Clock zegar;
     sf::Time czas;
     bool sync =true;
+    bool koniec = false;
+    bool widac = false;
+    bool maly = false;
 	sf::RenderWindow window(sf::VideoMode(600, 600), "SFML WORK!");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(sync);
@@ -28,7 +31,12 @@ int main()
 	if (!obraz3.loadFromFile("Obrazek3.jpg")){}
     sf::Texture obraz4;
 	if (!obraz4.loadFromFile("Obrazek4.jpg")){}
+    sf::Texture obraz5;
+	if (!obraz5.loadFromFile("Obrazek5.jpg")){}
 
+	sf::Sprite zdj6;
+	zdj6.setTexture(obraz5);
+	sf::Vector2f potwor(100.0f, 550.0f - zdj6.getGlobalBounds().height);
 	sf::Sprite zdj;
 	zdj.setTexture(obraz1);
 	zdj.setPosition(100,550);
@@ -49,17 +57,8 @@ int main()
 	sf::Sprite zdj5;
 	zdj5.setTexture(obraz3);
 
-	sf::Sprite zdj6;
-	zdj6.setTexture(obraz1);
-	zdj6.setPosition(310,550);
-
-	sf::Sprite zdj7;
-	zdj7.setTexture(obraz1);
-	zdj7.setPosition(-110,550);
-
 	sf::Sprite zdj8;
 	zdj8.setTexture(obraz4);
-	zdj8.setPosition(100, 100);
 
 	while (window.isOpen())
 	{
@@ -87,22 +86,43 @@ int main()
         }
 
         czas = zegar.getElapsedTime();
-        if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up || czas.asMilliseconds()>800){stanie = false;} // warunek, ktory sprawia ze nie mozna skakac
+        if((event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up) || czas.asMilliseconds()>700){stanie = false;} // warunek, ktory sprawia ze nie mozna skakac
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && stanie == true)
         {
-            ruch=sf::Vector2f(0.0f, -15.0f);                                                    //Skok
+            ruch=sf::Vector2f(0.0f, -18.0f);                                                    //Skok
             pozycja+=ruch;
         }
 
         zdj2.setPosition(pozycja);
+        zdj6.setPosition(potwor);
+        if(potwor.x < 465.0f && koniec == false){potwor.x+=2.5f;}
+        if(potwor.x == 465.0f){koniec = true;}
+        if(potwor.x <= 465.0f && koniec == true){potwor.x-=2.5f;}
+        if(potwor.x == 100.0f){koniec = false;}
 
-        pozycja.y+=3.0f;
+        if(zdj2.getGlobalBounds().intersects(zdj6.getGlobalBounds()))
+        {
+            std::cout << "\ndotknal cie, zmalales";
+            zdj2.setScale(sf::Vector2f(0.4, 0.4));
+            maly = true;
+        }
+        if(maly == true && zdj2.getGlobalBounds().intersects(zdj6.getGlobalBounds())){std::cout << "\ngame over";}
+        if(zdj2.getGlobalBounds().intersects(zdj8.getGlobalBounds()))
+        {
+            std::cout << "\nurosles";
+            zdj2.setScale(sf::Vector2f(0.8, 0.8));
+            zdj8.setPosition(sf::Vector2f(100.0f, 1000.0f));
+            widac = false;
+            maly = false;
+        }
+
+        pozycja.y+=8.0f;
         kolizja.kolizjoner(zdj, zdj2, pozycja, ruch, stanie, zegar);
         kolizja.kolizjoner(zdj3, zdj2, pozycja, ruch, stanie, zegar);
         kolizja.kolizjoner(zdj4, zdj2, pozycja, ruch, stanie, zegar);
 
         view.setCenter(pozycja.x, 350);                       //Kamera
-        zdj5.setPosition(pozycja.x - 310, 40);     //t³o
+        zdj5.setPosition(pozycja.x - 310, 40);     //tlo
 
 
 
@@ -121,23 +141,29 @@ int main()
 		window.draw(zdj4);
 		//window.draw(zdj6);
 		//window.draw(zdj7);
-if (zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()))  // zolte kolko
-        {
-            window.draw(zdj8);
-        }
+
+            if (zdj2.getGlobalBounds().intersects(zdj3.getGlobalBounds()))  // grzybek
+            {
+                zdj8.setPosition(100, 100);
+                widac = true;
+            }
+        if(widac == true){window.draw(zdj8);}
+
         sf::CircleShape kolko;
         kolko.setRadius(20);
         kolko.setFillColor(sf::Color::Yellow);
         kolko.setPosition(430, 150);
-if (zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()))  // grzybek
+        if (zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()))  // kolko
         {
             window.draw(kolko);
         }
+		window.draw(zdj6);
 		window.draw(zdj2);
 		window.display();
 	}
     return 0;
 }
+
 
 
 
