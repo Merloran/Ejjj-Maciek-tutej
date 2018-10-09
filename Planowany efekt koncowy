@@ -1,0 +1,189 @@
+#include "SFML/Graphics.hpp"
+#include <time.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <iostream>
+#include <math.h>
+#include <Gracz.h>
+
+int main()
+{
+    sf::Clock zegar;
+    sf::Time czas;
+    bool sync =true;
+	sf::RenderWindow oknogry(sf::VideoMode(600, 600), "SFML WORK!");
+    oknogry.setFramerateLimit(60);
+    oknogry.setVerticalSyncEnabled(sync);
+    int x;
+    Gracz Gracz(x);
+    sf::View widok(sf::FloatRect(0, 0, 600, 600));
+
+    sf::Texture postacx;
+	if (!postacx.loadFromFile("Postac.jpg")){}
+	sf::Sprite sprajt[10];
+	sf::Vector2f pozycje[10];
+	pozycje[3] = sf::Vector2f (100.0f, 550.0f);
+	pozycje[2] = sf::Vector2f (100.0f, 250.0f);
+	pozycje[1] = sf::Vector2f (400.0f, 250.0f);
+	sf::Vector2f pozycja(300.0f, 400.0f);
+	sf::Sprite postac;
+
+	sf::Texture obraz1;
+	if (!obraz1.loadFromFile("Obrazek1.jpg"))	{}
+	sf::Texture obraz2;
+	if (!obraz2.loadFromFile("Obrazek2.jpg")){}     //wczytuje obrazki
+	sf::Texture obraz3;
+	if (!obraz3.loadFromFile("Obrazek3.jpg")){}
+    sf::Texture obraz4;
+	if (!obraz4.loadFromFile("Obrazek4.jpg")){}
+
+	while (oknogry.isOpen())
+	{
+        oknogry.setView(widok);
+		sf::Event zdarzenie;
+        sf::Vector2f ruch(0.0f, 0.0f);
+        bool stanie;
+
+		while (oknogry.pollEvent(zdarzenie))
+		{
+                if (zdarzenie.type == sf::Event::Closed)
+                oknogry.close();
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Escape)
+                    oknogry.close();
+		}
+		//if(sf::Keyboard::isKeyPressed(sf::Keyboard::I)){std::cout << sprajt[4].getPosition().x << sprajt[4].getPosition().y << pozycje[3].x;}
+		Gracz.sterowanie(pozycja, zegar, zdarzenie, czas, ruch, stanie);
+		postac.setPosition(pozycja);
+		Gracz.kolizja(sprajt[3], postac, pozycja, ruch, stanie, zegar);
+        pozycja.y+=3.0f;
+		widok.setCenter(pozycja.x, 350);
+        pozycje[4] = sf::Vector2f(pozycja.x - 310, 40);
+
+		oknogry.clear();
+        Gracz.wstawobraz(pozycje[4], obraz3, oknogry, sprajt[4]);
+        Gracz.wstawobraz(pozycje[3], obraz1, oknogry, sprajt[3]);
+        Gracz.wstawobraz(pozycje[2], obraz2, oknogry, sprajt[2]);
+        Gracz.wstawobraz(pozycje[1], obraz2, oknogry, sprajt[1]);
+        Gracz.wstawobraz(pozycja, postacx, oknogry, postac);
+		oknogry.display();
+	}
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+//klasa gracz.h
+/*
+#ifndef GRACZ_H
+#define GRACZ_H
+#include "SFML/Graphics.hpp"
+
+
+class Gracz
+{
+    public:
+        Gracz(int x);
+        virtual ~Gracz();
+        void wstawobraz(sf::Vector2f pozycja, sf::Texture tekstura, sf::RenderWindow &oknogry, sf::Sprite sprajt);
+        void sterowanie(sf::Vector2f &pozycja, sf::Clock &zegar, sf::Event &zdarzenie, sf::Time &czas, sf::Vector2f &ruch, bool &stanie);
+        void kolizja(sf::Sprite obiekt, sf::Sprite &postac, sf::Vector2f &pozycja, sf::Vector2f &ruch, bool &stanie, sf::Clock &zegar);
+
+    protected:
+
+    private:
+};
+
+#endif // GRACZ_H
+*/
+
+
+//-----------------------------------------------------------------------------------------------------------------------------
+//klasa gracz.cpp
+/*
+#include "Gracz.h"
+#include <iostream>
+
+Gracz::Gracz(int x)
+{
+    //ctor
+}
+
+Gracz::~Gracz()
+{
+
+}
+
+void Gracz::wstawobraz(sf::Vector2f pozycja, sf::Texture tekstura, sf::RenderWindow &oknogry, sf::Sprite sprajt)
+{
+	sprajt.setTexture(tekstura);
+	sprajt.setPosition(pozycja);
+	oknogry.draw(sprajt);
+}
+
+
+void Gracz::sterowanie(sf::Vector2f &pozycja, sf::Clock &zegar, sf::Event &zdarzenie, sf::Time &czas, sf::Vector2f &ruch, bool &stanie)
+{
+    czas = zegar.getElapsedTime();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        ruch=sf::Vector2f(-3.0f, 0.0f);
+        pozycja+=ruch;
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))         //poruszanie sie <   >
+    {
+        ruch=sf::Vector2f(+3.0f, 0.0f);
+        pozycja+=ruch;
+    }
+    if(zdarzenie.type == sf::Event::KeyReleased && zdarzenie.key.code == sf::Keyboard::Up || czas.asMilliseconds()>1500){stanie = false;} // warunek ktory sprawia ze nie mozna latac
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))// && stanie == true)
+    {
+        ruch=sf::Vector2f(0.0f, -12.0f);                                                    //Skok
+        pozycja+=ruch;
+    }
+    //else
+    {
+        //ruch = sf::Vector2f(0.0f, +0.5f);
+        //pozycja+=ruch;
+        //ruch=sf::Vector2f(0.0f, 0.0f);
+    }
+}
+
+
+void Gracz::kolizja(sf::Sprite obiekt, sf::Sprite &postac, sf::Vector2f &pozycja, sf::Vector2f &ruch, bool &stanie, sf::Clock &zegar)
+{
+        sf::FloatRect gracz(pozycja, {postac.getGlobalBounds().width, postac.getGlobalBounds().height});
+        if(gracz.intersects(obiekt.getGlobalBounds()))
+        {
+
+             if (ruch==sf::Vector2f(-3.0f, 0.0f) && pozycja.x < obiekt.getPosition().x + obiekt.getGlobalBounds().width)
+             {
+                stanie = false;
+                pozycja.x=obiekt.getPosition().x + obiekt.getGlobalBounds().width;
+                std::cout << "prawa sciana";
+             }
+
+             if (ruch==sf::Vector2f(+3.0f, 0.0f) && pozycja.x > obiekt.getPosition().x - obiekt.getGlobalBounds().width)   //Kolizja prawie dziala!
+             {
+                stanie = false;
+                pozycja.x=obiekt.getPosition().x - postac.getGlobalBounds().width;
+                std::cout << "lewa sciana";
+             }
+
+             if (ruch==sf::Vector2f(0.0f, -15.0f) && pozycja.y < obiekt.getPosition().y + obiekt.getGlobalBounds().height)
+             {
+                stanie = false;
+                pozycja.y=obiekt.getPosition().y + obiekt.getGlobalBounds().height;
+                pozycja.y+=15.0f;
+                std::cout << "gorna sciana";
+             }
+
+             if(ruch==sf::Vector2f(0.0f, 0.0f) && pozycja.y > obiekt.getPosition().y - obiekt.getGlobalBounds().height)
+             {
+                zegar.restart();
+                stanie = true;
+                pozycja.y=obiekt.getPosition().y - postac.getGlobalBounds().height;
+                std::cout << "dolna sciana";
+             }
+        }
+}
+*/
