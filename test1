@@ -1,167 +1,200 @@
+//-------------------------------------------------------- DO main.cpp -----------------------------------------------------------------
+
 #include "SFML/Graphics.hpp"
 #include <time.h>
 #include <stdlib.h>
 #include <windows.h>
 #include <iostream>
 #include <math.h>
+#include <Gracz.h>
+#include <Obiekt.h>
+
 
 int main()
 {
     sf::Clock zegar;
     sf::Time czas;
-    bool sync =true;
-	sf::RenderWindow window(sf::VideoMode(600, 600), "SFML WORK!");
-    window.setFramerateLimit(60);
-    window.setVerticalSyncEnabled(sync);
-    sf::View view(sf::FloatRect(0, 0, 600, 600));
+	sf::RenderWindow oknogry(sf::VideoMode(600, 600), "SFML WORK!");
+	bool gora, lewo, prawo = false;
+    oknogry.setFramerateLimit(60);
+    oknogry.setVerticalSyncEnabled(true);
+    sf::View widok(sf::FloatRect(0, 0, 600, 600));
 
-	sf::Texture obraz;
-	if (!obraz.loadFromFile("Obrazek.jpg")){}
-	sf::Texture obraz1;
-	if (!obraz1.loadFromFile("Obrazek1.jpg"))	{}
-	sf::Texture obraz2;
-	if (!obraz2.loadFromFile("Obrazek2.jpg")){}     //wczytuje obrazki
-	sf::Texture obraz3;
-	if (!obraz3.loadFromFile("Obrazek3.jpg")){}
-    sf::Texture obraz4;
-	if (!obraz4.loadFromFile("Obrazek4.jpg")){}
+    sf::Texture postacTX;
+	postacTX.loadFromFile("Postac.jpg");
+	sf::Sprite postac(postacTX);
 
-	sf::Sprite zdj;
-	zdj.setTexture(obraz1);
-	zdj.setPosition(100,550);
+	sf::Texture tekstura[10];
+	tekstura[1].loadFromFile("Tlo.jpg");
+	tekstura[2].loadFromFile("Obrazek1.jpg");
+	sf::Sprite sprajt[10];
+    sprajt[1].setTexture(tekstura[1]);
+    sprajt[2].setTexture(tekstura[2]);
+    sprajt[2].setTextureRect(sf::IntRect(0, 0, 800, 400));
+    sprajt[3].setTexture(tekstura[2]);
+    sprajt[3].setTextureRect(sf::IntRect(0, 0, 100, 100));
 
-	sf::Sprite zdj2;
-	zdj2.setTexture(obraz);
-	zdj2.setScale(sf::Vector2f(0.8,0.8));
-	sf::Vector2f pozycja(300.0f, 400.0f);
+	Gracz graczObj(postac);
 
-	sf::Sprite zdj3;
-	zdj3.setTexture(obraz2);
-	zdj3.setPosition(100,200);
+	Obiekt platObj(-300, 500, sprajt[2]);
+	Obiekt platObj1(100, 100, sprajt[3]);
 
-	sf::Sprite zdj4;
-	zdj4.setTexture(obraz2);
-	zdj4.setPosition(400,200);
-
-	sf::Sprite zdj5;
-	zdj5.setTexture(obraz3);
-
-	sf::Sprite zdj6;
-	zdj6.setTexture(obraz1);
-	zdj6.setPosition(310,550);
-
-	sf::Sprite zdj7;
-	zdj7.setTexture(obraz1);
-	zdj7.setPosition(-110,550);
-
-	sf::Sprite zdj8;
-	zdj8.setTexture(obraz4);
-	zdj8.setPosition(100, 100);
-
-	while (window.isOpen())
+	while (oknogry.isOpen())
 	{
-        window.setView(view);
-		sf::Event event;
+        oknogry.setView(widok);
+		sf::Event zdarzenie;
 
-		while (window.pollEvent(event))
+		while (oknogry.pollEvent(zdarzenie))
 		{
-                if (event.type == sf::Event::Closed)
-                window.close();
-                if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                    window.close();
-        }
-        bool stanie;
-    sf::Vector2f ruch(0.0f, 0.0f);
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        {
-            ruch=sf::Vector2f(-3.0f, 0.0f);
-            pozycja+=ruch;
-        }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))         //poruszanie sie <  >
-        {
-            ruch=sf::Vector2f(+3.0f, 0.0f);
-            pozycja+=ruch;
-        }
-
-        czas = zegar.getElapsedTime();
-        if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up || czas.asMilliseconds()>1200){stanie = false;} // warunek, ktory sprawia ze nie mozna skakac
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && stanie == true)
-        {
-            ruch=sf::Vector2f(0.0f, -12.0f);                                                    //Skok
-            pozycja+=ruch;
-        }
-
-        zdj2.setPosition(pozycja.x, pozycja.y);
-        if (zdj.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj6.getGlobalBounds().intersects(zdj2.getGlobalBounds()) || zdj7.getGlobalBounds().intersects(zdj2.getGlobalBounds())) // odpowiada za kolizje przy spadaniu
-        {
-                zegar.restart();
-                stanie=true;
-                view.setCenter(pozycja.x, 400);                       //Kamera
-                zdj5.setPosition(pozycja.x - 310, 90);    //t³o
-        }
-		else //powoduje spadanie
-		{
-			pozycja.y+=6;
-            view.setCenter(pozycja.x, 400);                       //Kamera
-            zdj5.setPosition(pozycja.x - 310, 90);     //t³o
+                if (zdarzenie.type == sf::Event::Closed)
+                oknogry.close();
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Escape)
+                    oknogry.close();
 		}
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) prawo = true;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) lewo = true;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) gora = true;
+        if(!(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))) gora = false;               //Sterowanie
+        if(!(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))) prawo = false;
+        if(!(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) lewo = false;
+
+        graczObj.sterowanie(gora, lewo, prawo, platObj, zdarzenie);        //Kolizja i Poruszanie sie
+        //graczObj.sterowanie(gora, lewo, prawo, platObj1, zdarzenie);  //2 obiekt - PROBLEM
+
+		widok.setCenter(graczObj.obraz.getPosition().x, 350); //Kamera
+        sprajt[1].setPosition(graczObj.obraz.getPosition().x - oknogry.getSize().x/2 - 10, 50);
 
 
-            sf::FloatRect rectToMove(pozycja, {zdj2.getGlobalBounds().width, zdj2.getGlobalBounds().width});
-                    if(rectToMove.intersects(zdj3.getGlobalBounds()))
-                {
-
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && pozycja.x < zdj3.getPosition().x + zdj3.getGlobalBounds().width)
-             {
-                pozycja.x=zdj3.getPosition().x + zdj3.getGlobalBounds().width;
-                pozycja.y+=5;
-             }
-
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && pozycja.x > zdj3.getPosition().x - zdj3.getGlobalBounds().width)   //Kolizja prawie dziala!
-             {
-                pozycja.x=zdj3.getPosition().x - zdj2.getGlobalBounds().width;
-                pozycja.y+=5;
-             }
-
-             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && pozycja.y < zdj3.getPosition().y + zdj3.getGlobalBounds().height)
-             {
-                pozycja.y=zdj3.getPosition().y + zdj3.getGlobalBounds().height;
-                pozycja.y+=19;
-             }
-             if(pozycja.y > zdj.getPosition().y + zdj.getGlobalBounds().height)
-             {
-                pozycja.y=zdj.getPosition().y + zdj.getGlobalBounds().height;
-             }
-                }
-
-            if(pozycja.y >= 600)
-            {
-                window.close();
-                std::cout << "GAME OVER!";
-            }
-
-		window.clear();
-
-		window.draw(zdj5);
-		window.draw(zdj);
-		window.draw(zdj2);
-		window.draw(zdj3);      //mapa
-		window.draw(zdj4);
-		window.draw(zdj6);
-		window.draw(zdj7);
-if (zdj3.getGlobalBounds().intersects(zdj2.getGlobalBounds()))  // zolte kolko
-        {
-            window.draw(zdj8);
-        }
-        sf::CircleShape kolko;
-        kolko.setRadius(20);
-        kolko.setFillColor(sf::Color::Yellow);
-        kolko.setPosition(430, 150);
-if (zdj4.getGlobalBounds().intersects(zdj2.getGlobalBounds()))  // grzybek
-        {
-            window.draw(kolko);
-        }
-		window.display();
+		oknogry.clear();
+        oknogry.draw(sprajt[1]);
+        oknogry.draw(platObj.obraz);
+        oknogry.draw(platObj1.obraz);
+        oknogry.draw(graczObj.obraz);
+		oknogry.display();
 	}
-    return 0;
 }
+
+
+
+
+//---------------------------------------------------------- DO Gracz.h -----------------------------------------------------------------
+
+
+#ifndef GRACZ_H
+#define GRACZ_H
+#include "SFML/Graphics.hpp"
+
+
+class Obiekt
+{
+    public:
+        float xPoz, yPoz, xRuch, yRuch, SCgorna, SCdolna, SCprawa, SClewa;
+        sf::Sprite obraz;
+        Obiekt(int PobXPoz, int PobYPoz, sf::Sprite sprajt)
+        {
+            obraz = sprajt;
+            obraz.setPosition(PobXPoz, PobYPoz);
+            SClewa = obraz.getPosition().x;
+            SCprawa = obraz.getPosition().x + obraz.getGlobalBounds().width;
+            SCgorna = obraz.getPosition().y;
+            SCdolna = obraz.getPosition().y + obraz.getGlobalBounds().height;
+        }
+};
+
+class Gracz
+{
+    public:
+        bool Koliduje, Stanie, Skok;
+        float xRuch, yRuch, xPoz, yPoz;
+        sf::Clock zegar;
+        sf::Time czas;
+        sf::Sprite obraz;
+        Gracz(sf::Sprite postac)
+        {
+            obraz = postac;
+            xRuch = 0;
+            yRuch = 0;
+            xPoz = 0;
+            yPoz = 0;
+            Koliduje = false;
+            Stanie = false;
+            Skok = true;
+        }
+        void sterowanie(bool gora, bool lewo, bool prawo, Obiekt platforma, sf::Event &zdarzenie)
+        {
+                if(Stanie)
+                {
+                    Skok = true;
+                    zegar.restart();
+                }
+                else
+                {
+                    yRuch = 12;
+                }
+                if(prawo)
+                {
+                    xRuch = 4;
+                }
+                if(lewo)
+                {
+                    xRuch = -4;
+                }
+                if(zegar.getElapsedTime().asMilliseconds() > 350 || (zdarzenie.type == sf::Event::KeyReleased && zdarzenie.key.code == sf::Keyboard::Up))
+                {
+                    Skok = false;
+                }
+                if(gora && Skok)
+                {
+                    Stanie = false;
+                    zegar.getElapsedTime();
+                    yRuch = -14;
+                }
+                if(!(prawo || lewo))
+                {
+                    xRuch = 0;
+                }
+                obraz.setPosition(sf::Vector2f(obraz.getPosition().x + xRuch, obraz.getPosition().y));
+                kolizja(xRuch, 0, platforma);
+                obraz.setPosition(sf::Vector2f(obraz.getPosition().x, obraz.getPosition().y + yRuch));
+                kolizja(0, yRuch, platforma);
+        }
+
+
+        void kolizja(float xRuchDelta, float yRuchDelta, Obiekt platforma)
+        {
+            if(obraz.getPosition().x + obraz.getGlobalBounds().width > platforma.SClewa && obraz.getPosition().x < platforma.SCprawa &&
+                obraz.getPosition().y + obraz.getGlobalBounds().height > platforma.SCgorna && obraz.getPosition().y < platforma.SCdolna)
+            {
+                Koliduje = true;
+            }
+            else
+            {
+                Koliduje = false;
+            }
+            if(Koliduje)
+            {
+                if(xRuchDelta > 0)
+                {
+                    obraz.setPosition(sf::Vector2f(platforma.SClewa - obraz.getGlobalBounds().width, obraz.getPosition().y));
+                }
+                if(xRuchDelta < 0)
+                {
+                    obraz.setPosition(sf::Vector2f(platforma.SCprawa, obraz.getPosition().y));
+                }
+                if(yRuchDelta > 0)
+                {
+                    obraz.setPosition(sf::Vector2f(obraz.getPosition().x, platforma.SCgorna - obraz.getGlobalBounds().height));
+                    Stanie = true;
+                }
+                if(yRuchDelta < 0)
+                {
+                    Skok = false;
+                    obraz.setPosition(sf::Vector2f(obraz.getPosition().x, platforma.SCdolna));
+                }
+            }
+        }
+
+
+};
+
+#endif // GRACZ_H
