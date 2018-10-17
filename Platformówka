@@ -1,5 +1,6 @@
 //-------------------------------------------------------- DO main.cpp -----------------------------------------------------------------
 
+
 #include "SFML/Graphics.hpp"
 #include <time.h>
 #include <stdlib.h>
@@ -7,8 +8,6 @@
 #include <iostream>
 #include <math.h>
 #include <Gracz.h>
-#include <Obiekt.h>
-
 
 int main()
 {
@@ -30,14 +29,27 @@ int main()
 	sf::Sprite sprajt[10];
     sprajt[1].setTexture(tekstura[1]);
     sprajt[2].setTexture(tekstura[2]);
-    sprajt[2].setTextureRect(sf::IntRect(0, 0, 800, 400));
-    sprajt[3].setTexture(tekstura[2]);
-    sprajt[3].setTextureRect(sf::IntRect(0, 0, 100, 100));
+    sprajt[2].setTextureRect(sf::IntRect(0, 0, 100, 50));  //wymiary obiektow
 
 	Gracz graczObj(postac);
 
-	Obiekt platObj(-300, 500, sprajt[2]);
-	Obiekt platObj1(100, 100, sprajt[3]);
+
+
+
+
+
+
+
+	Obiekt obiekty[ilosc] = {Obiekt( 0, 600, sprajt[2]),
+                                Obiekt( 100, 600, sprajt[2]),
+                                Obiekt( 200, 600, sprajt[2]),
+                                Obiekt( 300, 600, sprajt[2]),
+                                Obiekt( 400, 600, sprajt[2]),
+                                Obiekt( 500, 600, sprajt[2]),};
+
+
+
+
 
 	while (oknogry.isOpen())
 	{
@@ -58,8 +70,7 @@ int main()
         if(!(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))) prawo = false;
         if(!(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))) lewo = false;
 
-        graczObj.sterowanie(gora, lewo, prawo, platObj, zdarzenie);        //Kolizja i Poruszanie sie
-        //graczObj.sterowanie(gora, lewo, prawo, platObj1, zdarzenie);  //2 obiekt - PROBLEM
+        graczObj.sterowanie(gora, lewo, prawo, obiekty, zdarzenie);        //Kolizja i Poruszanie sie
 
 		widok.setCenter(graczObj.obraz.getPosition().x, 350); //Kamera
         sprajt[1].setPosition(graczObj.obraz.getPosition().x - oknogry.getSize().x/2 - 10, 50);
@@ -67,14 +78,14 @@ int main()
 
 		oknogry.clear();
         oknogry.draw(sprajt[1]);
-        oknogry.draw(platObj.obraz);
-        oknogry.draw(platObj1.obraz);
+        for(int i = 0; i <=5; i++)
+        {
+        oknogry.draw(obiekty[i].obraz);
+        }
         oknogry.draw(graczObj.obraz);
 		oknogry.display();
 	}
 }
-
-
 
 
 //---------------------------------------------------------- DO Gracz.h -----------------------------------------------------------------
@@ -83,7 +94,9 @@ int main()
 #ifndef GRACZ_H
 #define GRACZ_H
 #include "SFML/Graphics.hpp"
+#include <iostream>
 
+const int ilosc = 6;
 
 class Obiekt
 {
@@ -120,7 +133,7 @@ class Gracz
             Stanie = false;
             Skok = true;
         }
-        void sterowanie(bool gora, bool lewo, bool prawo, Obiekt platforma, sf::Event &zdarzenie)
+        void sterowanie(bool gora, bool lewo, bool prawo, Obiekt obiekty[ilosc], sf::Event &zdarzenie)
         {
                 if(Stanie)
                 {
@@ -154,42 +167,45 @@ class Gracz
                     xRuch = 0;
                 }
                 obraz.setPosition(sf::Vector2f(obraz.getPosition().x + xRuch, obraz.getPosition().y));
-                kolizja(xRuch, 0, platforma);
+                kolizja(xRuch, 0, obiekty);
                 obraz.setPosition(sf::Vector2f(obraz.getPosition().x, obraz.getPosition().y + yRuch));
-                kolizja(0, yRuch, platforma);
+                kolizja(0, yRuch, obiekty);
         }
 
 
-        void kolizja(float xRuchDelta, float yRuchDelta, Obiekt platforma)
+        void kolizja(float xRuchDelta, float yRuchDelta, Obiekt obiekty[ilosc])
         {
-            if(obraz.getPosition().x + obraz.getGlobalBounds().width > platforma.SClewa && obraz.getPosition().x < platforma.SCprawa &&
-                obraz.getPosition().y + obraz.getGlobalBounds().height > platforma.SCgorna && obraz.getPosition().y < platforma.SCdolna)
+            for(int i = 0; i <=5; i++)
             {
-                Koliduje = true;
-            }
-            else
-            {
-                Koliduje = false;
-            }
-            if(Koliduje)
-            {
-                if(xRuchDelta > 0)
+                if(obraz.getPosition().x + obraz.getGlobalBounds().width > obiekty[i].SClewa && obraz.getPosition().x < obiekty[i].SCprawa &&
+                    obraz.getPosition().y + obraz.getGlobalBounds().height > obiekty[i].SCgorna && obraz.getPosition().y < obiekty[i].SCdolna)
                 {
-                    obraz.setPosition(sf::Vector2f(platforma.SClewa - obraz.getGlobalBounds().width, obraz.getPosition().y));
+                    Koliduje = true;
                 }
-                if(xRuchDelta < 0)
+                else
                 {
-                    obraz.setPosition(sf::Vector2f(platforma.SCprawa, obraz.getPosition().y));
+                    Koliduje = false;
                 }
-                if(yRuchDelta > 0)
+                if(Koliduje)
                 {
-                    obraz.setPosition(sf::Vector2f(obraz.getPosition().x, platforma.SCgorna - obraz.getGlobalBounds().height));
-                    Stanie = true;
-                }
-                if(yRuchDelta < 0)
-                {
-                    Skok = false;
-                    obraz.setPosition(sf::Vector2f(obraz.getPosition().x, platforma.SCdolna));
+                    if(xRuchDelta > 0)
+                    {
+                        obraz.setPosition(sf::Vector2f(obiekty[i].SClewa - obraz.getGlobalBounds().width, obraz.getPosition().y));
+                    }
+                    if(xRuchDelta < 0)
+                    {
+                        obraz.setPosition(sf::Vector2f(obiekty[i].SCprawa, obraz.getPosition().y));
+                    }
+                    if(yRuchDelta > 0)
+                    {
+                        obraz.setPosition(sf::Vector2f(obraz.getPosition().x, obiekty[i].SCgorna - obraz.getGlobalBounds().height));
+                        Stanie = true;
+                    }
+                    if(yRuchDelta < 0)
+                    {
+                        Skok = false;
+                        obraz.setPosition(sf::Vector2f(obraz.getPosition().x, obiekty[i].SCdolna));
+                    }
                 }
             }
         }
